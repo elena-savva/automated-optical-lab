@@ -1,16 +1,60 @@
-# Tauri + Vue + TypeScript
+# Optical Lab Control Suite
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A modular software architecture for automating optical laboratory experiments. Built with Rust and Vue.js, this system provides automated control of optical instruments via standard communication protocols.
 
-## Recommended IDE Setup
+## Features
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- **Instrument Control**: Supports Thorlabs CLD1015 Laser Diode Controller (USB) and Santec MPM-210H Power Meter (TCP/IP)
+- **Safety Mechanisms**: TEC validation, current limiting (1.5A max), automatic laser shutdown
+- **Experiment Automation**: Configurable current sweeps with real-time power measurements
+- **Data Management**: Automatic CSV logging with timestamps
+- **Real-time Visualization**: Live L-I curve plotting during experiments
 
-## Type Support For `.vue` Imports in TS
+## Prerequisites
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+- Rust (latest stable)
+- Node.js v16+
+- VISA drivers for USB communication
+- Compatible optical instruments
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+## Installation
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+```bash
+git clone https://github.com/elena-savva/automated-optical-lab
+cd optical-lab-suite
+npm install
+npm run tauri dev
+```
+
+## Usage
+
+1. Connect optical instruments
+2. Launch application and verify device connections
+3. Configure current sweep parameters
+4. Start experiment
+5. Data automatically saved to `./logs/`
+
+## Architecture
+
+- **Backend**: Rust with Tauri
+- **Frontend**: Vue 3 with TypeScript
+- **Communication**: visa-rs (USB), TCP/IP sockets
+- **Data Storage**: CSV files with structured logging
+
+## Project Structure
+
+```
+optical-lab-suite/
+├── src-tauri/          # Rust backend
+│   └── src/
+│       ├── devices/    # Instrument drivers
+│       └── experiment/ # Experiment logic
+├── src/                # Vue frontend
+└── logs/               # Data output
+```
+
+
+## Contact
+
+Elena Savva - e.savva@student.tue.nl
+
