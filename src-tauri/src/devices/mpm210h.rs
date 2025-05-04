@@ -4,6 +4,7 @@ use std::io::{Read, Write};
 use std::net::{TcpStream, SocketAddr};
 use std::time::Duration;
 use thiserror::Error;
+use tracing::{info, warn, error};
 
 #[derive(Error, Debug)]
 pub enum MPM210HError {
@@ -26,13 +27,16 @@ pub struct MPM210H {
 
 impl MPM210H {
     pub fn new(ip_address: &str, port: u16) -> Self {
+        let address = format!("{}:{}", ip_address, port);
+        info!("Initializing MPM210H with address: {}", address);
         MPM210H {
             connection: None,
-            address: format!("{}:{}", ip_address, port),
+            address,
         }
     }
 
     pub fn connect(&mut self) -> Result<String> {
+        info!("Attempting to connect to MPM210H at {}", self.address);
         let socket_addr: SocketAddr = self.address.parse()
             .map_err(|e: std::net::AddrParseError| MPM210HError::ParseError(e.to_string()))?;
         
@@ -42,7 +46,9 @@ impl MPM210H {
         self.connection = Some(stream);
         
         // Return the device identification
-        self.query("*IDN?")
+        let id = self.query("*IDN?")?;
+        info!("MPM210H connected successfully. IDN: {}", id);
+        Ok(id)
     }
     
 
@@ -53,10 +59,12 @@ impl MPM210H {
     pub fn send_command(&mut self, command: &str) -> Result<()> {
         if let Some(stream) = &mut self.connection {
             let cmd = format!("{}\n", command);
+            info!("Sending command to MPM210H: {}", command);
             stream.write_all(cmd.as_bytes())?;
             stream.flush()?;
             Ok(())
         } else {
+            error!("Attempted to send command but MPM210H is not connected");
             Err(MPM210HError::NotConnected)
         }
     }
@@ -65,8 +73,11 @@ impl MPM210H {
         if let Some(stream) = &mut self.connection {
             let mut buf = [0_u8; 1024];
             let n = stream.read(&mut buf)?;
-            Ok(String::from_utf8_lossy(&buf[..n]).trim().to_string())
+            let response = String::from_utf8_lossy(&buf[..n]).trim().to_string();
+            info!("Received response from MPM210H: {}", response);
+            Ok(response)
         } else {
+            error!("Attempted to read from MPM210H but device is not connected");
             Err(MPM210HError::NotConnected)
         }
     }
@@ -82,6 +93,7 @@ impl MPM210H {
     }
 
     pub fn read_power(&mut self, module: u8) -> Result<String> {
+        info!("Reading power from module {}", module);
         self.query(&format!("READ? {}", module))
     }
 
@@ -90,6 +102,28 @@ impl MPM210H {
     }
 
     pub fn set_wavelength(&mut self, wavelength: u32) -> Result<()> {
+        info!("Setting MPM210H wavelength {}", wavelength);
         self.send_command(&format!("WAV {}", wavelength))
     }
+
+    pub fn get_error(&mut self) -> Result<String> {
+        let response = self.query("ERR?")?;
+        info!("Queried MPM210H error queue: {}", response);
+        Ok(response)
+    }
+
+    // Clear all errors (only if needed)
+    pub fn clear_error_queue(&mut self) -> Result<Vec<String>> {
+        let mut errors = Vec::new();
+        loop {
+            let response = self.query("ERR?")?;
+            info!("Clearing error queue entry from MPM210H: {}", response);
+            if response.trim().starts_with("0") || response.to_lowercase().contains("no error") {
+                break;
+            }
+            errors.push(response);
+        }
+        Ok(errors)
+    }    
+    
 }
