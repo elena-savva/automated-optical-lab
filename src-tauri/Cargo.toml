@@ -1,6 +1,9 @@
 [package]
 name = "automated-optical-lab"
 version = "0.1.0"
+description = "Automated optical laboratory control suite"
+authors = ["Elena Savva"]
+license = "MIT"
 edition = "2021"
 
 [build-dependencies]
