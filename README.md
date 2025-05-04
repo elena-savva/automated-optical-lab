@@ -53,8 +53,3 @@ optical-lab-suite/
 └── logs/               # Data output
 ```
 
-
-## Contact
-
-Elena Savva - e.savva@student.tue.nl
-
