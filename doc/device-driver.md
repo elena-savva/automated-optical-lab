@@ -152,7 +152,7 @@ let power = mpm.read_power(1)?;
 
 ### Wavelength Synchronization
 
-The MPM210H wavelength must be set to match the emission wavelength of the CLD1015 (typically 980nm) for accurate power measurements. This synchronization is handled in the experiment module.
+The MPM210H wavelength must be set to match the emission wavelength of the CLD1015 (in my case 980nm) for accurate power measurements. This synchronization is handled in the experiment module.
 
 ### Measurement Timing
 
