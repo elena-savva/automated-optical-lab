@@ -92,6 +92,17 @@ impl MPM210H {
         self.query("IDIS?")
     }
 
+    pub fn perform_zeroing(&mut self) -> Result<()> {
+        info!("Performing zeroing operation to remove electrical offsets");
+        if !self.is_connected() {
+            return Err(MPM210HError::NotConnected);
+        }
+        self.send_command("ZERO")?;
+        info!("Zeroing command sent successfully");
+        Ok(())
+    }
+    
+
     pub fn read_power(&mut self, module: u8) -> Result<String> {
         info!("Reading power from module {}", module);
         self.query(&format!("READ? {}", module))
