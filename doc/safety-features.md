@@ -107,20 +107,7 @@ pub fn run_current_sweep_with_live_plot(
 
 ## Optical Power Protection
 
-### 1. Maximum Input Power Protection
-
-**Purpose:** Prevent damage to the power meter by exceeding its maximum rated input power.
-
-**Implementation:**
-- The MPM-210H has a maximum input power of +16dBm
-- User documentation clearly specifies this limit
-- Current sweep parameters are validated to ensure they won't exceed this limit
-
-**Verification:**
-- Parameter validation in the UI and backend before experiments start
-- Logging of all power measurements for audit purposes
-
-### 2. Zeroing Function
+### 1. Zeroing Function
 
 **Purpose:** Ensure accurate power measurements by removing electrical offsets.
 
