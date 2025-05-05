@@ -33,6 +33,20 @@ pub fn run_current_sweep_with_live_plot(
         return Err("TEC must be ON before starting the experiment".into());
     }
 
+    // Perform zeroing before starting the sweep to ensure accurate measurements
+    info!("Performing zeroing operation before sweep to remove electrical offsets");
+    match mpm.perform_zeroing() {
+        Ok(_) => info!("Zeroing command sent successfully"),
+        Err(e) => {
+            error!("Failed to perform zeroing: {}", e);
+            return Err(format!("Failed to perform zeroing: {}", e));
+        }
+    }
+
+    // Give time for the zeroing operation to complete (3 seconds as per documentation)
+    std::thread::sleep(std::time::Duration::from_secs(3));
+    info!("Zeroing completed, proceeding with sweep");
+
     //  laser off at the beginning
     cld.set_laser_output(false).ok();
     // ensure mpm210h is at the cld1015 wavelength
