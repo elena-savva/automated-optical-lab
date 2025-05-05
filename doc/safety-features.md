@@ -115,11 +115,18 @@ pub fn run_current_sweep_with_live_plot(
 ```rust
 // Before measuring optical power, run Zeroing to delete electrical DC offset
 // This command action takes about 3 sec
-pub fn zero_command_handler() -> Result<(), String> {
+pub fn perform_zeroing(&mut self) -> Result<()> {
+        info!("Performing zeroing operation to remove electrical offsets");
+        if !self.is_connected() {
+            return Err(MPM210HError::NotConnected);
+        }
+        self.send_command("ZERO")?;
+        info!("Zeroing command sent successfully");
+        Ok(())
+    }
     // Ensure no input light during zeroing
     // Wait for completion
     // Verify successful zeroing
-}
 ```
 
 **Verification:**
